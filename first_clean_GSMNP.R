@@ -6,6 +6,7 @@
 library(readr)
 library(tidyverse)
 library(lubridate)
+library(dplyr)
 
 #what happens if we use the raw original csv file
 visit_og <- read_csv("GRSM_MICR_475/Data/Visitation by Month.csv")
@@ -47,7 +48,7 @@ View(visit_date_clean)
   
 #creating csv to add to project files
 write.csv(visit_date_clean,"visitation.csv")
-  
+
   
 
 
