@@ -27,7 +27,7 @@ visit_long <- visit_raw |>
     values_to= "attendance"
   )
 View(visit_long)
-
+ 
 #fix order:
 visit_order <- visit_long |>
   relocate(month, attendance, .after = 1)
