@@ -17,7 +17,7 @@ View(visit_og)
 #then: read_csv code should work now. Data cleaning can begin
 
 
-visit_raw <- read_csv("GRSM_MICR_475/Data/Visit_by_month.csv")
+visit_raw <- read_csv("Data/Visit_by_month.csv")
 View(visit_raw)
 
 visit_long <- visit_raw |>
@@ -46,6 +46,6 @@ visit_date_clean <- visit_order |>
 View(visit_date_clean)
 
 
-
+write_csv(visit_date_clean, ("output/Clean_Visit.csv"))
 
 
