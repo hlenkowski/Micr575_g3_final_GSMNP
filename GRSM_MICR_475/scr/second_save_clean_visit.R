@@ -8,7 +8,7 @@ library(tidyverse)
 library(lubridate)
 
 #what happens if we use the raw original csv file
-visit_og <- read_csv("GRSM_MICR_475/Data/Visitation by Month.csv")
+visit_og <- read_csv("Data/Visit_by_month.csv")
 View(visit_og)
 
 #the csv file from GSMNP opens properly in excel. however, the visit values are stores as numbers BUT include commas, likely for human readability.
@@ -19,6 +19,7 @@ View(visit_og)
 
 visit_raw <- read_csv("Data/Visit_by_month.csv")
 View(visit_raw)
+
 
 visit_long <- visit_raw |>
   pivot_longer(
@@ -45,7 +46,18 @@ visit_date_clean <- visit_order |>
   )
 View(visit_date_clean)
 
+# change formatting to match weather data 
+visit_date_clean$date <- format(as.Date(visit_date_clean$date), "%Y-%m")
 
-write_csv(visit_date_clean, ("output/Clean_Visit.csv"))
+#get rid of useless columns
+visit_date_clean <- visit_date_clean[, -c(1, 2, 5, 6)]
+
+#rename date column to month
+visit_date_clean <- visit_date_clean |>
+  rename(month = date)
+View(visit_date_clean)
+
+#put new csv file in for use later
+write_csv(visit_date_clean, ("output/clean_visit.csv"))
 
 
