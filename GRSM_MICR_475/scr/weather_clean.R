@@ -14,7 +14,7 @@ precip <- precip %>%
   group_by(startDateTime) %>%
   summarise(mean_value = mean(precipBulk, na.rm = TRUE))
 
-colnames(precip) <- c("month", "precip")
+colnames(precip) <- c("date", "precip")
 
 #Temperature
 files <- list.files(path = "Data/NEON_temp-bio", full.names = TRUE)
@@ -30,9 +30,9 @@ temp <- temp %>%
   summarise(across(starts_with("bioTempM"), 
                    mean, na.rm = TRUE))
 
-colnames(temp) <- c("month", "mean_temp", "min_temp", "max_temp")
+colnames(temp) <- c("date", "mean_temp", "min_temp", "max_temp")
 
 #combine data sets
-weather <- left_join(precip, temp, by = "month")
+weather <- left_join(precip, temp, by = "date")
 
 write.csv(weather, "output/weather.csv")
