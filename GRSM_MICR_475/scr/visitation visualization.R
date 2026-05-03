@@ -3,15 +3,13 @@ library(tidyverse)
 library(ggthemes)
 
 #pulling tidied version of visiation data
-visitation <- read.csv("visitation.csv")
+visitation <- read.csv("output/clean_visit.csv")
 
-#removing columns to keep the most relevant for this visualization + keeping only 2020-2025
 #change Year to factor for graph color purpose
 
-reduced_vis <- visitation |>
+visitation <- visitation |>
   mutate(as.factor(Year)) |>
-  filter(Year > 2019) |>
-  select(c(2,3,4,5,8))
+  filter(Year >2019)
 
 #assigning year colors so graphs are easier to read
 year_colors <- c("#ff4938","#008a25","#3d4ba6","#debb0d","#9b4ddb", "#c41670")
@@ -22,26 +20,27 @@ year_colors <- c("#ff4938","#008a25","#3d4ba6","#debb0d","#9b4ddb", "#c41670")
 
 month_order <- c("JAN","FEB","MAR","APR","MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
 
-Q1 <- ggplot(data=reduced_vis, aes(x=factor(month, levels=month_order), y=attendance, group=Year, color=as.factor(Year))) +
+Q1 <- ggplot(data=visitation, aes(x=factor(month, levels=month_order), y=attendance, group=Year, color=as.factor(Year))) +
   geom_line() +
   geom_point() +
-  scale_color_manual(values=year_colors)
+  scale_color_manual(values=year_colors) +
   labs(, x = "Month", y = "Attendance", fill = "Year") 
-
+plot(Q1)
 
 ########
 #Q2) How has park visitation changed in the past 5 years?
 ########
 
 #Yearly visitation counts from 2020-2025 by year
-Q2 <- ggplot(data=reduced_vis, aes(x=Year, y=AnnualTotal, fill=as.factor(Year))) +
+Q2A <- ggplot(data=visitation, aes(x=Year, y=AnnualTotal, fill=as.factor(Year))) +
   geom_bar(stat="identity") +
   scale_fill_manual(values=year_colors) +
   labs(title = "Visitation per Year", x = "Year", y = "Attendance", fill = "Year")
-
+plot(Q2A)
 
 #How has visitation changed in the past 5 years in monthly visitation? 
-Q2A <- ggplot(data=reduced_vis, aes(x=factor(month, levels=month_order), y=attendance, fill=as.factor(Year))) +
+Q2B <- ggplot(data=visitation, aes(x=factor(month, levels=month_order), y=attendance, fill=as.factor(Year))) +
   geom_bar(position="dodge", stat="identity") +
   scale_fill_manual(values=year_colors) +
   labs(title = "Monthly Visitation per Year", x = "Month", y = "Attendance", fill = "Year")
+plot(Q2B)

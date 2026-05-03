@@ -1,26 +1,119 @@
 ---
 title: "graphs_results"
 format: html
+output-dir: output
 editor: visual
 ---
 
-## Quarto
+## Visualizing Great Smoky Mountains National Park Visitation
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+Through these visualizations we will learn how park visitation changes over time through the years, months and weather.
 
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+**Run this code to prep the data:**
 
 ```{r}
-1 + 1
+library(dplyr)
+library(tidyverse)
+library(ggthemes)
+library(here)
+
+#pulling tidied version of visiation data
+visitation <- read.csv(here::here("output/clean_visit.csv"))
+
+#change Year to factor for graph color purpose
+
+visitation <- visitation |>
+  mutate(as.factor(Year)) |>
+  filter(Year >2019)
+
+#assigning year colors so graphs are easier to read
+year_colors <- c("#ff4938","#008a25","#3d4ba6","#debb0d","#9b4ddb", "#c41670")
+
+#Change month order to chronological, not alphabetical
+month_order <- c("JAN","FEB","MAR","APR","MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
 ```
 
-You can add options to executable code like this
+## Question 1: How does park visitation change throughout the year?
+
+Run this code to visualize the data to answer Question 1:
 
 ```{r}
-#| echo: false
-2 * 2
+#| label: "Plot Q1"
+#| fig-cap: "This graph shows how GRSM visitation changes through the months of the year."
+
+Q1 <- ggplot(data=visitation, aes(x=factor(month, levels=month_order), y=attendance, group=Year, color=as.factor(Year))) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values=year_colors) +
+  labs(, x = "Month", y = "Attendance", fill = "Year") 
+plot(Q1)
+
+
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+**Answer to Question 1:** This graph sows that the highest visitation is in the summer over June and July and in October. These results make sense due to summer breaks from school and peak leaf color in the fall.
+
+## Question 2: How has park visitation changed in the past 5 years?
+
+**Run this code to visualize the data to answer Question 2A:** Yearly visitation counts from 2020-2025 by year.
+
+```{r}
+#| label: "Plot Q2A"
+#| fig-cap: "This graph shows total visitation for GRSM from 2020 to 2025."
+
+Q2A <- ggplot(data=visitation, aes(x=Year, y=AnnualTotal, fill=as.factor(Year))) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values=year_colors) +
+  labs(title = "Visitation per Year", x = "Year", y = "Attendance", fill = "Year")
+plot(Q2A)
+```
+
+**Answer to Question 2A:** This shows that the highest visitation was in 2021 and lowest was in 2020. These results make sense because most people weren't traveling during 2020 and having more outdoor vacations in 2021.
+
+**Run this code to visualize the data to answer Question 2B:** YHow has visitation changed in the past 5 years in monthly visitation?
+
+```{r}
+#| label: "Plot Q2B"
+#| fig-cap: "This graph shows total visitation for GRSM from 2020 to 2025 split by year."
+
+Q2B <- ggplot(data=visitation, aes(x=factor(month, levels=month_order), y=attendance, fill=as.factor(Year))) +
+  geom_bar(position="dodge", stat="identity") +
+  scale_fill_manual(values=year_colors) +
+  labs(title = "Monthly Visitation per Year", x = "Month", y = "Attendance", fill = "Year")
+plot(Q2B)
+```
+
+**Answer to Question 2B:** This graph shows a combination of the information from Question 1 and 2A. It adds nuance that in 2020 visitation dropped in march and April compared to other years. It also shows that October is the most consistently busy month.
+
+## Question 3: How do trends in park attendance compare to weather?
+
+Load in data:
+
+```{r}
+ weather_visit <- read_csv(here::here("output/weather_visit.csv"))
+ 
+ custom_order <- c("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG","SEP", "OCT", "NOV", "DEC")
+weather_visit$month <- factor(weather_visit$month, levels = custom_order)
+```
+
+Run this code to visualize the data to answer Question 3:
+
+```{r}
+#| label: "Plot Q3"
+#| fig-cap: "This graph shows total visitation for GRSM from 2020 to 2025 with information on weather's influence."
+
+ggplot(weather_visit, aes(x = month, y = attendance)) +                
+  # Shading based on temperature (color) and size based on precip
+  geom_point(aes(color = mean_temp, size = precip), alpha = 0.7) +
+  # Formatting
+  scale_color_viridis_c(option = "plasma") + # Good color scale for temp
+  labs(title = "Monthly Visitation Analysis",
+       x = "Month",
+       y = "Visitation Count",
+       color = "Temp (C)",
+       size = "Precip (mm)") +
+  theme_minimal() +                
+  theme(strip.text = element_text(face="bold", size=12))
+```
+
+**Answer to Question 3:** This graph shows that rain doesn't necessarily impact visitation, although the least visited months are often very rainy. The least visited months are also the coldest.

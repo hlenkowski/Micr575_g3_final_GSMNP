@@ -50,12 +50,7 @@ View(visit_date_clean)
 visit_date_clean$date <- format(as.Date(visit_date_clean$date), "%Y-%m")
 
 #get rid of useless columns
-visit_date_clean <- visit_date_clean[, -c(1, 2, 5, 6)]
-
-#rename date column to month
-visit_date_clean <- visit_date_clean |>
-  rename(month = date)
-View(visit_date_clean)
+visit_date_clean <- visit_date_clean[, -c(5, 6)]
 
 #put new csv file in for use later
 write_csv(visit_date_clean, ("output/clean_visit.csv"))
